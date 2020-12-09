@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client/core";
 import { TodoFilter } from "../../interfaces/TodoFilter";
 
-const GET_TODOS = gql`
+export const GET_TODOS = gql`
     query getTodos($filters:TodoFilter!){
         todos(filters:$filters){
             page,
