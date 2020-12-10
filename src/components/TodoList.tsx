@@ -1,20 +1,28 @@
-import React from "react"
-import { GetTodos } from '../hooks/queries'
-import { TodoItem } from './TodoItem'
-import { gql, useMutation } from "@apollo/client"
+import { useSelector } from 'react-redux'
+import { todosItemsSelector } from '../redux/selectors/todoSelectors'
+
+export default function TodoList() {
+    const todos = useSelector(todosItemsSelector)
+    
+    return (
+        <>
+            <ul className="todo-list">
+                {todos.map(todo => (
+                    <li key={todo.id}>
+                        {todo.description}
+                    </li>
+                ))}
+            </ul>
+        </>
+    )
+}
+
+
+/*
 
 const TodoList: React.FC = () => {
-    const { data, loading, error } = GetTodos({})
 
-    const SET_COMPLETED = gql`
-    mutation setCompleted($input:TodoCompletedInput!){
-        setCompleted(input:$input)
-    }
-`
-    const [updateMutation] = useMutation(SET_COMPLETED)
-
-    if (loading) return <p>Loading list...</p>
-    if (error) return <p>Something went wrong!</p>
+    const data = { todos: { items: [] } }
 
     return (
         <>
@@ -23,26 +31,6 @@ const TodoList: React.FC = () => {
                     {data.todos.items.map((todo: any) => (
                         <TodoItem onCompletedChange={(ev) => {
                             ev.preventDefault()
-
-                            updateMutation({
-                                variables: {
-                                    input: {
-                                        id: todo.id,
-                                        completed: ev.target.checked
-                                    }
-                                }, update: (cache, result) => {
-                                    cache.modify({
-                                        id: cache.identify(todo),
-                                        fields: {
-                                            completed(cachedCompleted) {
-                                                return !cachedCompleted
-                                            }
-                                        }
-                                    })
-
-                                }
-
-                            })
                         }} key={todo.id} {...todo} />
                     ))}
                 </ul>
@@ -53,3 +41,4 @@ const TodoList: React.FC = () => {
 }
 
 export default TodoList
+*/
