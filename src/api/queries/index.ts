@@ -1,2 +1,6 @@
 export * from './getTodo'
 export * from './listTodo'
+export * from './setTodoCompletedField'
+export * from './createTodo'
+export * from './deleteTodo'
+export * from './modifyTodo'

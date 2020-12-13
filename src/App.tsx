@@ -1,43 +1,32 @@
-/*
-import React from 'react';
-import { Container } from '@material-ui/core'
-import CreateTodo from './components/CreateTodo'
-*/
 import TodoList from './components/TodoList';
+import CreateTodo from './components/CreateTodo'
 import { useEffect } from 'react';
 import './assets/style/App.scss'
 import { useApi } from './hooks/graphql/useApi';
 import { Header } from './components'
 import { useActions } from './hooks/redux/useActions';
+import { Container } from '@material-ui/core';
 
-function App() {
+export default function App() {
 
   const api = useApi()
-  const { todoGetAllSuccess } = useActions()
+  const { todoGetAllSuccess, todoGetAllFailure } = useActions()
 
   useEffect(() => {
     api.getTodos({}).then((data) => {
       todoGetAllSuccess(data)
+    }).catch(() => {
+      todoGetAllFailure()
     })
-  }, [api, todoGetAllSuccess])
-
-  function onClick() {
-    api.getTodo(3483)
-  }
+  }, [api, todoGetAllSuccess, todoGetAllFailure])
 
   return (
     <div className="App">
       <Header />
-      <TodoList />
-      <button onClick={onClick}>get</button>
+      <Container maxWidth="md">
+        <CreateTodo />
+        <TodoList />
+      </Container>
     </div>
   );
 }
-
-export default App;
-/*
-<Container maxWidth="md">
-          <CreateTodo />
-          <TodoList />
-        </Container>
-*/

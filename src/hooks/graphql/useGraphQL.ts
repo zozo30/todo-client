@@ -9,7 +9,7 @@ export function useGraphQL() {
         fecthingStart()
         try {
             const res = await axios.post(`${process.env.REACT_APP_GRAPHQL_PATH}`, { query, variables })
-            return { success: true, data: res.data }
+            return { success: true, data: res.data.data }
         } catch (error) {
             return { success: false, error }
         } finally {

@@ -1,9 +1,8 @@
 import { apiConstants } from '../constants'
 
 export default function appReducer(state = {
-    fetchingCount: 0
+    fetchingCount: 0,
 }, action: any) {
-    console.log('action:', action.type)
     switch (action.type) {
         case apiConstants.FETCHING_START:
             return { ...state, fetchingCount: state.fetchingCount + 1 }
