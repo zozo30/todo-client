@@ -3,7 +3,7 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import { useSelector } from 'react-redux';
 import { useApi } from '../hooks/graphql/useApi';
 import { useActions } from '../hooks/redux/useActions';
-import { todosMaxPagesSelector, todosCurrentPageSelector, todosIsPaginatingSelector, todosFilterSelector } from '../redux/selectors/todoSelectors'
+import { todosMaxPagesSelector, todosCurrentPageSelector, todosIsPaginatingSelector, todosFilterSelector, todosTotalRecordsSelector } from '../redux/selectors/todoSelectors'
 
 export default function TodoListPaginator() {
     const theme = useTheme();
@@ -12,20 +12,19 @@ export default function TodoListPaginator() {
     const currentPage = useSelector(todosCurrentPageSelector)
     const isPaginate = useSelector(todosIsPaginatingSelector)
     const paginationFilter = useSelector(todosFilterSelector)
+    const totalRecords = useSelector(todosTotalRecordsSelector)
 
     const api = useApi()
-    const { todoPaginationRequest, todoPaginationEnd, todoGetAllSuccess } = useActions()
+    const { todoSetItems } = useActions()
 
     const take = 10
 
     const paginate = (offsetPage: number) => {
-        todoPaginationRequest()
         const skip = take * ((currentPage + offsetPage) - 1)
         api.getTodos({ pagination: { skip, take }, ...paginationFilter }).then((data) => {
-            todoPaginationEnd()
-            todoGetAllSuccess(data)
+            todoSetItems(data)
         }).catch(() => {
-            todoPaginationEnd()
+
         })
     }
 
@@ -65,6 +64,7 @@ export default function TodoListPaginator() {
                 <Breadcrumbs aria-label="breadcrumb">
                     <p>{currentPage}</p>
                     <p>{maxPage} Pages</p>
+                    <p>{totalRecords} Records</p>
                 </Breadcrumbs>
             </Grid>
 

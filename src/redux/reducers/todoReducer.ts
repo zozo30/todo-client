@@ -12,27 +12,18 @@ export default function todoReducer(state = {
     completdFilter: CompletedFilterType.ALL
 }, action: any) {
     switch (action.type) {
-        case todoConstants.TODO_GETALL_SUCCESS:
+        case todoConstants.TODO_SET_ITEMS:
             return { ...state, ...action.payload }
-        case todoConstants.TODO_SETCOMPLETED_SUCCESS:
-            return { ...state, items: state.items.map((todo: Todo) => todo.id === action.payload.id ? { ...todo, ...action.payload } : todo) }
-        case todoConstants.TODO_CREATE_SUCCESS:
+        case todoConstants.TODO_ADD_ITEM:
             return { ...state, items: [action.payload, ...state.items] }
-        case todoConstants.TODO_DELETE_SUCCESS:
+        case todoConstants.TODO_REMOVE_ITEM:
             return { ...state, items: state.items.filter((todo: Todo) => todo.id !== action.payload.id) }
-        case todoConstants.TODO_PAGINATE_REQUEST:
-            return { ...state, isPaginate: true }
-        case todoConstants.TODO_PAGINATE_END:
-            return { ...state, isPaginate: false }
-        case todoConstants.TODO_MODIFY_REQUEST:
-            return { ...state, isUpdating: true }
-        case todoConstants.TODO_MODIFY_FAILURE:
-            return { ...state, isUpdating: false }
-        case todoConstants.TODO_MODIFY_SUCCESS:
-            return { ...state, items: state.items.map((todo: Todo) => todo.id === action.payload.id ? { ...todo, ...action.payload } : todo), isUpdating: false }
-        case todoConstants.TODO_COMPLETED_FILTER_CHANGED:
+        case todoConstants.TODO_UPDATE_ITEM:
+            return { ...state, items: state.items.map((todo: Todo) => todo.id === action.payload.id ? { ...todo, ...action.payload } : todo) }
+        case todoConstants.TODO_SET_FILTER:
             return { ...state, completdFilter: action.payload }
         default:
             return state
+
     }
 }

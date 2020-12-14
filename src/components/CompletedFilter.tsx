@@ -9,7 +9,7 @@ import { useActions } from "../hooks/redux/useActions"
 export default function CompletedFilter() {
 
     const api = useApi()
-    const { todoCompletedFilterChanged, todoGetAllSuccess, todoGetAllFailure } = useActions()
+    const { todoSetFilter, todoSetItems } = useActions()
 
     const actualFilterType = useSelector(todosCompletedFilterSelector)
 
@@ -25,10 +25,9 @@ export default function CompletedFilter() {
         }
 
         api.getTodos(filters).then((data) => {
-            todoCompletedFilterChanged(ev.target.value)
-            todoGetAllSuccess(data)
+            todoSetFilter(ev.target.value)
+            todoSetItems(data)
         }).catch(() => {
-            todoGetAllFailure()
         })
     }
 

@@ -15,16 +15,5 @@ export const todosCompletedFilterSelector = (state: State) => state.todos.comple
 
 export const todosFilterSelector = createSelector(
     todosCompletedFilterSelector,
-    (completedfilter: CompletedFilterType) => {
-        const filter: any = {}
-        switch (completedfilter) {
-            case CompletedFilterType.COMPLETED:
-                filter.completed = true
-                break
-            case CompletedFilterType.NON_COMPLETED:
-                filter.completed = false
-                break
-        }
-        return filter
-    }
+    (completedfilter: CompletedFilterType) => completedfilter === CompletedFilterType.ALL ? {} : (completedfilter === CompletedFilterType.COMPLETED ? { completed: true } : { completed: false })
 )

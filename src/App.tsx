@@ -1,5 +1,7 @@
 import TodoList from './components/TodoList';
 import CreateTodo from './components/CreateTodo'
+import SuccessSnackBar from './components/SuccessSnackBar'
+import FailureSnackBar from './components/FailureSnackBar'
 import { useEffect } from 'react';
 import './assets/style/App.scss'
 import { useApi } from './hooks/graphql/useApi';
@@ -10,15 +12,15 @@ import { Container } from '@material-ui/core';
 export default function App() {
 
   const api = useApi()
-  const { todoGetAllSuccess, todoGetAllFailure } = useActions()
+  const { todoSetItems } = useActions()
 
   useEffect(() => {
     api.getTodos({}).then((data) => {
-      todoGetAllSuccess(data)
+      todoSetItems(data)
     }).catch(() => {
-      todoGetAllFailure()
+
     })
-  }, [api, todoGetAllSuccess, todoGetAllFailure])
+  }, [api, todoSetItems])
 
   return (
     <div className="App">
@@ -27,6 +29,8 @@ export default function App() {
         <CreateTodo />
         <TodoList />
       </Container>
+      <SuccessSnackBar />
+      <FailureSnackBar />
     </div>
   );
 }

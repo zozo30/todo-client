@@ -8,6 +8,8 @@ import { useActions } from "../hooks/redux/useActions";
 import { formatDate } from '../utils/formatters'
 import { todosIsItemUpdatingSelector } from '../redux/selectors/todoSelectors'
 import { useSelector } from "react-redux";
+import SnackBarActionType from "../types/SnackBarActionType";
+import SnackBarType from "../types/SnackBarType";
 
 export interface TodoItemProps {
     id: string
@@ -25,7 +27,7 @@ enum ItemUIStateTypes {
 export default function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItemProps) {
 
     const api = useApi()
-    const { todoSetCompletedSuccess, todoDeleteSuccess, todoDeleteFailure, todoSetCompletedFailure, todoModifyRequest, todoModifySuccess, todoModifyFailure } = useActions()
+    const { todoUpdateItem, todoRemoveItem, setSnackBar } = useActions()
 
     const [uiState, setuiState] = useState(ItemUIStateTypes.DISPLAY)
     const isUpdating = useSelector(todosIsItemUpdatingSelector)
@@ -33,11 +35,21 @@ export default function TodoItem({ id, createdAt, updatedAt, completed, descript
     const updateInputRef = useRef<HTMLInputElement>(null)
 
     const handleCompletedChange = (ev: any) => {
-        api.setTodoCompleted(id, ev.target.checked).then(res => todoSetCompletedSuccess(res.setCompleted)).catch(er => todoSetCompletedFailure())
+        api.setTodoCompleted(id, ev.target.checked).then(res => {
+            todoUpdateItem(res.setCompleted)
+            setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Completed flag changed successfully')
+        }).catch(() => { })
     }
 
     const handleDelete = () => {
-        api.deleteTodo(id).then(res => res.removed ? todoDeleteSuccess(res) : todoDeleteFailure()).catch(er => todoDeleteFailure())
+        api.deleteTodo(id).then(res => {
+            if (res.removed) {
+                todoRemoveItem(res)
+                setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo deleted')
+            } else {
+
+            }
+        }).catch(er => { })
     }
 
     const handleEdit = () => {
@@ -54,12 +66,12 @@ export default function TodoItem({ id, createdAt, updatedAt, completed, descript
 
     const handleUpdate = () => {
         if (updateInputRef.current) {
-            todoModifyRequest()
+
             api.modifyTodo(id, updateInputRef.current.value).then((data) => {
-                todoModifySuccess(data)
+                todoUpdateItem(data)
                 setuiState(ItemUIStateTypes.DISPLAY)
+                setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo update completed')
             }).catch(() => {
-                todoModifyFailure()
             })
         }
     }

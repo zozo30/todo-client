@@ -45,3 +45,11 @@ ul {
 .pagination{
   padding-top: 10px;
 }
+
+.snack-bar-container{
+  position: fixed;
+  bottom: 0;
+  .snack-bar-item{
+    margin-bottom: 10px;
+  }
+}
