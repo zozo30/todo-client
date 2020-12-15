@@ -1,15 +1,16 @@
 import { TextField, FormControl } from '@material-ui/core'
+import React, { useCallback } from 'react';
 import { useApi } from '../hooks/graphql/useApi';
 import { useActions } from '../hooks/redux/useActions';
 import SnackBarActionType from '../types/SnackBarActionType';
 import SnackBarType from '../types/SnackBarType';
 
-export default function CreateTodo() {
+function CreateTodo() {
 
     const api = useApi()
     const { todoAddItem, setSnackBar } = useActions()
 
-    const handleCreate = (ev: any) => {
+    const handleCreate = useCallback((ev: any) => {
         ev.preventDefault()
 
         const description = ev.target.elements.todo.value;
@@ -23,7 +24,7 @@ export default function CreateTodo() {
         }).catch((er) => {
 
         })
-    }
+    }, [api, todoAddItem, setSnackBar])
 
     return (
         <form className="fluid" onSubmit={handleCreate}>
@@ -37,3 +38,5 @@ export default function CreateTodo() {
         </form>
     )
 }
+
+export default React.memo(CreateTodo)

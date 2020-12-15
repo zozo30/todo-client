@@ -1,10 +1,10 @@
 import { Todo } from "../../interfaces/Todo";
 import CompletedFilterType from "../../types/CompletedFilterType";
+import { ToastMessage } from "../../types/ToastMessage";
 
 export interface AppState {
     fetchingCount: number
-    successMessages: Array<string>,
-    failureMessages: Array<string>,
+    messages: Array<ToastMessage>,
 }
 
 export interface TodoState {

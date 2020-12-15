@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert, { Color } from '@material-ui/lab/Alert';
 
 interface SnackBarItemProps {
     useTimer: boolean
@@ -7,9 +7,10 @@ interface SnackBarItemProps {
     onClose: Function
     autoHideDuration: number | undefined
     id: string
+    type: Color
 }
 
-const MemoizedItem = React.memo(function SnackBarItem({ useTimer, message, onClose, autoHideDuration }: SnackBarItemProps) {
+const MemoizedItem = React.memo(function SnackBarItem({ useTimer, message, onClose, autoHideDuration, type }: SnackBarItemProps) {
     useEffect(() => {
         if (useTimer) {
             const timer = setTimeout(() => {
@@ -20,7 +21,7 @@ const MemoizedItem = React.memo(function SnackBarItem({ useTimer, message, onClo
     }, [useTimer, onClose, autoHideDuration])
 
     return (
-        <MuiAlert className="snack-bar-item" elevation={6} variant="filled">
+        <MuiAlert severity={type} className="snack-bar-item" elevation={6} variant="filled">
             {message}
         </MuiAlert>
     )
@@ -42,6 +43,7 @@ function SnackBar({ autoHideDuration, items, onClose }: SnackBarProps) {
                     onClose={onClose}
                     key={`alert-message-${item.id}`}
                     message={item.message}
+                    type={item.type}
                     useTimer={autoHideDuration !== undefined}
                 />
             ))}

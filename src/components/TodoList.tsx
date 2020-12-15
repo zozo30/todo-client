@@ -4,8 +4,9 @@ import TodoItem, { TodoItemProps } from './TodoItem'
 import TodoListPaginator from './TodoListPaginator'
 import CompletedFilter from './CompletedFilter'
 import { Grid } from '@material-ui/core'
+import React from 'react'
 
-export default function TodoList() {
+function TodoList() {
     const todos = useSelector(todosItemsSelector)
 
     return (
@@ -27,3 +28,5 @@ export default function TodoList() {
         </>
     )
 }
+
+export default React.memo(TodoList)

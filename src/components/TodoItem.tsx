@@ -2,7 +2,7 @@ import { Button, Grid, Paper, Checkbox, TextField, FormControl, ClickAwayListene
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
-import { useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useApi } from "../hooks/graphql/useApi";
 import { useActions } from "../hooks/redux/useActions";
 import { formatDate } from '../utils/formatters'
@@ -10,6 +10,7 @@ import { todosIsItemUpdatingSelector } from '../redux/selectors/todoSelectors'
 import { useSelector } from "react-redux";
 import SnackBarActionType from "../types/SnackBarActionType";
 import SnackBarType from "../types/SnackBarType";
+import React from "react";
 
 export interface TodoItemProps {
     id: string
@@ -24,24 +25,24 @@ enum ItemUIStateTypes {
     EDIT
 }
 
-export default function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItemProps) {
+function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItemProps) {
 
     const api = useApi()
     const { todoUpdateItem, todoRemoveItem, setSnackBar } = useActions()
 
-    const [uiState, setuiState] = useState(ItemUIStateTypes.DISPLAY)
+    const [uiState, setUIState] = useState(ItemUIStateTypes.DISPLAY)
+    const [editText, setEditText] = useState(description)
+
     const isUpdating = useSelector(todosIsItemUpdatingSelector)
 
-    const updateInputRef = useRef<HTMLInputElement>(null)
-
-    const handleCompletedChange = (ev: any) => {
+    const handleCompletedChange = useCallback((ev: any) => {
         api.setTodoCompleted(id, ev.target.checked).then(res => {
             todoUpdateItem(res.setCompleted)
             setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Completed flag changed successfully')
         }).catch(() => { })
-    }
+    }, [todoUpdateItem, setSnackBar, api, id])
 
-    const handleDelete = () => {
+    const handleDelete = useCallback(() => {
         api.deleteTodo(id).then(res => {
             if (res.removed) {
                 todoRemoveItem(res)
@@ -50,31 +51,34 @@ export default function TodoItem({ id, createdAt, updatedAt, completed, descript
 
             }
         }).catch(er => { })
-    }
+    }, [todoRemoveItem, setSnackBar, api, id])
 
-    const handleEdit = () => {
-        setuiState(ItemUIStateTypes.EDIT)
-    }
+    const handleEdit = useCallback(() => {
+        setUIState(ItemUIStateTypes.EDIT)
+    }, [])
 
-    const handleCancelEdit = () => {
-        setuiState(ItemUIStateTypes.DISPLAY)
-    }
+    const handleCancelEdit = useCallback(() => {
+        setUIState(ItemUIStateTypes.DISPLAY)
+    }, [])
 
-    const handleClickAway = () => {
-        setuiState(ItemUIStateTypes.DISPLAY)
-    }
+    const handleClickAway = useCallback(() => {
+        setUIState(ItemUIStateTypes.DISPLAY)
+    }, [])
 
-    const handleUpdate = () => {
-        if (updateInputRef.current) {
+    const handleUpdate = useCallback(() => {
 
-            api.modifyTodo(id, updateInputRef.current.value).then((data) => {
-                todoUpdateItem(data)
-                setuiState(ItemUIStateTypes.DISPLAY)
-                setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo update completed')
-            }).catch(() => {
-            })
-        }
-    }
+        api.modifyTodo(id, editText).then((data) => {
+            todoUpdateItem(data)
+            setUIState(ItemUIStateTypes.DISPLAY)
+            setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo update completed')
+        }).catch(() => {
+        })
+
+    }, [todoUpdateItem, setSnackBar, api, id, editText])
+
+    const handleEditInputChange = useCallback((ev: any) => {
+        setEditText(ev.target.value)
+    }, [])
 
     return (
         <>
@@ -95,7 +99,7 @@ export default function TodoItem({ id, createdAt, updatedAt, completed, descript
                                             rows={4}
                                             autoFocus={true}
                                             id="editInput"
-                                            inputRef={updateInputRef}
+                                            onChange={handleEditInputChange}
                                             defaultValue={description} />
                                     </FormControl>
                                 </ClickAwayListener>
@@ -149,5 +153,6 @@ export default function TodoItem({ id, createdAt, updatedAt, completed, descript
             </li>
         </>
     )
-
 }
+
+export default React.memo(TodoItem)

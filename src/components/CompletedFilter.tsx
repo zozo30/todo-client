@@ -2,39 +2,29 @@ import { useSelector } from "react-redux"
 import { todosCompletedFilterSelector } from '../redux/selectors/todoSelectors'
 import { Select, FormControl, InputLabel, MenuItem } from '@material-ui/core'
 import CompletedFilterType from '../types/CompletedFilterType'
-import React from "react"
+import React, { useCallback } from "react"
 import { useApi } from "../hooks/graphql/useApi"
 import { useActions } from "../hooks/redux/useActions"
 
-export default function CompletedFilter() {
+function CompletedFilter() {
 
     const api = useApi()
     const { todoSetFilter, todoSetItems } = useActions()
 
     const actualFilterType = useSelector(todosCompletedFilterSelector)
 
-    const handleChange = (ev: any) => {
-        const filters: any = {}
-        switch (ev.target.value) {
-            case CompletedFilterType.COMPLETED:
-                filters.completed = true
-                break
-            case CompletedFilterType.NON_COMPLETED:
-                filters.completed = false
-                break
-        }
-
-        api.getTodos(filters).then((data) => {
-            todoSetFilter(ev.target.value)
+    const handleChange = useCallback((ev: any) => {
+        api.getTodos(ev.target.value === CompletedFilterType.ALL ? {} : (ev.target.value === CompletedFilterType.COMPLETED ? { completed: true } : { completed: false })).then((data) => {
             todoSetItems(data)
+            todoSetFilter(ev.target.value)
         }).catch(() => {
         })
-    }
+    }, [api, todoSetItems, todoSetFilter])
 
     return (
         <>
             <FormControl fullWidth>
-                <InputLabel>Filter by completed todo</InputLabel>
+                <InputLabel>Filter by completed todo's</InputLabel>
                 <Select
                     id="completed-filter"
                     onChange={handleChange}
@@ -50,3 +40,5 @@ export default function CompletedFilter() {
         </>
     )
 }
+
+export default React.memo(CompletedFilter)

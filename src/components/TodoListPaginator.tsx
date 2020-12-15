@@ -1,42 +1,49 @@
 import { MobileStepper, Button, useTheme, Breadcrumbs, Grid } from '@material-ui/core';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
+import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useApi } from '../hooks/graphql/useApi';
 import { useActions } from '../hooks/redux/useActions';
-import { todosMaxPagesSelector, todosCurrentPageSelector, todosIsPaginatingSelector, todosFilterSelector, todosTotalRecordsSelector } from '../redux/selectors/todoSelectors'
+import { todosMaxPagesSelector, todosCurrentPageSelector, todosIsPaginatingSelector, todosTotalRecordsSelector, todosCompletedFilterSelector } from '../redux/selectors/todoSelectors'
+import CompletedFilterType from '../types/CompletedFilterType';
 
-export default function TodoListPaginator() {
+function TodoListPaginator() {
     const theme = useTheme();
 
     const maxPage = useSelector(todosMaxPagesSelector)
     const currentPage = useSelector(todosCurrentPageSelector)
     const isPaginate = useSelector(todosIsPaginatingSelector)
-    const paginationFilter = useSelector(todosFilterSelector)
     const totalRecords = useSelector(todosTotalRecordsSelector)
+    const actualFilterType = useSelector(todosCompletedFilterSelector)
 
     const api = useApi()
     const { todoSetItems } = useActions()
 
     const take = 10
 
-    const paginate = (offsetPage: number) => {
+    const paginate = useCallback((offsetPage: number) => {
         const skip = take * ((currentPage + offsetPage) - 1)
-        api.getTodos({ pagination: { skip, take }, ...paginationFilter }).then((data) => {
+
+        const filters: any = Object.assign(
+            { pagination: { skip, take } },
+            actualFilterType === CompletedFilterType.ALL ? {} : (actualFilterType === CompletedFilterType.COMPLETED ? { completed: true } : { completed: false }))
+
+        api.getTodos(filters).then((data) => {
             todoSetItems(data)
         }).catch(() => {
 
         })
-    }
+    }, [api, currentPage, todoSetItems, actualFilterType])
 
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         if (isPaginate) return
         paginate(1)
-    };
+    }, [paginate, isPaginate]);
 
-    const handleBack = () => {
+    const handleBack = useCallback(() => {
         if (isPaginate) return
         paginate(-1)
-    };
+    }, [paginate, isPaginate]);
 
     return (
         <Grid className="fluid" alignItems="center" container spacing={2}>
@@ -73,3 +80,5 @@ export default function TodoListPaginator() {
         </Grid>
     )
 }
+
+export default React.memo(TodoListPaginator)

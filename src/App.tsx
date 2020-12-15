@@ -1,7 +1,6 @@
 import TodoList from './components/TodoList';
 import CreateTodo from './components/CreateTodo'
-import SuccessSnackBar from './components/SuccessSnackBar'
-import FailureSnackBar from './components/FailureSnackBar'
+import SnackBarContainer from './components/SnackBarContainer'
 import { useEffect } from 'react';
 import './assets/style/App.scss'
 import { useApi } from './hooks/graphql/useApi';
@@ -29,8 +28,7 @@ export default function App() {
         <CreateTodo />
         <TodoList />
       </Container>
-      <SuccessSnackBar />
-      <FailureSnackBar />
+      <SnackBarContainer />
     </div>
   );
 }

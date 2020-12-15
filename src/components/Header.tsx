@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux"
 import { isFetchingSelector } from "../redux/selectors/appSelectors"
 import { LinearProgress } from '@material-ui/core'
+import React from "react"
 
-export function Header() {
+function Header() {
     const isFetching = useSelector(isFetchingSelector)
     return (
         <header className="app-header">
@@ -10,3 +11,5 @@ export function Header() {
         </header >
     )
 }
+
+export default React.memo(Header)
