@@ -1,28 +1,34 @@
+import ToggleFetchType from '../../types/ToggleFetchType';
+import * as ActionTypes from '../constants'
 import SnackBarActionType from '../../types/SnackBarActionType';
 import SnackBarType from '../../types/SnackBarType';
-import ToggleFetchType from '../../types/ToggleFetchType';
-import { apiConstants } from '../constants'
-import shortid from 'shortid'
-import { ToastMessage } from '../../types/ToastMessage';
+import { Reducer } from 'redux'
+import { Action, AppState } from '../types';
 
 
-export default function appReducer(state = {
+export const appReducer: Reducer<AppState> = (state = {
     fetchingCount: 0,
-    messages: [] as Array<ToastMessage>,
-}, action: any) {
-    switch (action.type) {
-        case apiConstants.SET_TOGGLE_FETCH:
-            return { ...state, fetchingCount: action.payload.type === ToggleFetchType.FETCHING ? state.fetchingCount + 1 : state.fetchingCount - 1 }
-        case apiConstants.SET_SNACKBAR:
-            switch (action.payload.action as SnackBarActionType) {
-                case SnackBarActionType.SHOW:
-                    return { ...state, messages: [...state.messages, { id: shortid.generate(), message: action.payload.message, type: action.payload.type === SnackBarType.SUCCESS ? 'success' : 'error' }] }
-                case SnackBarActionType.CLEAR:
-                    return { ...state, messages: state.messages.filter((_v, i) => i !== 0) }
-
+    messages: [],
+}, action) => {
+    switch ((action as Action).type) {
+        case ActionTypes.SET_TOGGLE_FETCH:
+            return {
+                ...state,
+                fetchingCount: action.payload === ToggleFetchType.FETCHING ? state.fetchingCount + 1 : state.fetchingCount - 1
             }
-            break
-        default:
+        case ActionTypes.SET_SNACKBAR:
+            if (action.payload.action === SnackBarActionType.SHOW)
+                return {
+                    ...state,
+                    messages: [...state.messages,
+                    { id: action.payload.id, message: action.payload.message, type: action.payload.type === SnackBarType.SUCCESS ? "success" : "error" }]
+                }
+
+            if (action.payload.action === SnackBarActionType.CLEAR)
+                return { ...state, messages: state.messages.slice(1) }
+
             return state;
+        default:
+            return state
     }
 }

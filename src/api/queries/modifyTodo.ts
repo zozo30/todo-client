@@ -4,6 +4,8 @@ mutation modifyTodo($input:TodoModifyInput!){
         id,
         description
         updatedAt
+        createdAt
+        completed
     }
 }
 `

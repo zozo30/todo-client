@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { todosItemsSelector } from '../redux/selectors/todoSelectors'
+import { todosItemsSelector } from '../redux/selectors'
 import TodoItem, { TodoItemProps } from './TodoItem'
 import TodoListPaginator from './TodoListPaginator'
 import CompletedFilter from './CompletedFilter'
@@ -12,10 +12,10 @@ function TodoList() {
     return (
         <>
             <Grid className="fluid pagination" alignItems="center" container spacing={2}>
-                <Grid item xs={3}>
+                <Grid item xs={12} sm={3}>
                     <CompletedFilter />
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item xs={12} sm={9}>
                     <TodoListPaginator />
                 </Grid>
             </Grid>

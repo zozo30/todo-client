@@ -11,15 +11,13 @@ import { Container } from '@material-ui/core';
 export default function App() {
 
   const api = useApi()
-  const { todoSetItems } = useActions()
+  const { setTodoItems } = useActions()
 
   useEffect(() => {
     api.getTodos({}).then((data) => {
-      todoSetItems(data)
-    }).catch(() => {
-
+      setTodoItems(data)
     })
-  }, [api, todoSetItems])
+  }, [api, setTodoItems])
 
   return (
     <div className="App">

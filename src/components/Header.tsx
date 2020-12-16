@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { isFetchingSelector } from "../redux/selectors/appSelectors"
+import { isFetchingSelector } from "../redux/selectors"
 import { LinearProgress } from '@material-ui/core'
 import React from "react"
 

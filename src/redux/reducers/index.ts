@@ -1,8 +1,9 @@
-import appReducer from './appReducer'
+import { appReducer } from './appReducer'
 import todoReducer from './todoReducer'
-import { combineReducers } from 'redux'
+import { combineReducers, Reducer } from 'redux'
+import { RootState } from '../types'
 
-const rootReducer = combineReducers({
+const rootReducer: Reducer<RootState> = combineReducers({
     app: appReducer,
     todos: todoReducer
 })

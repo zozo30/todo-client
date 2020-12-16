@@ -1,20 +1,20 @@
 import SnackBar from './SnackBar'
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux'
-import { useActions } from '../hooks/redux/useActions'
-import { snackBarMessagesSelector } from '../redux/selectors/appSelectors'
+import { snackBarMessagesSelector } from '../redux/selectors'
 import SnackBarActionType from '../types/SnackBarActionType';
 import SnackBarType from '../types/SnackBarType';
+import { useSnackBar } from '../hooks/redux/useSnackBar';
 
 function SuccessSnackBar() {
 
     const snackBarMessages = useSelector(snackBarMessagesSelector)
 
-    const { setSnackBar } = useActions()
+    const snackBar = useSnackBar()
 
     const handleClose = useCallback(() => {
-        setSnackBar(SnackBarActionType.CLEAR, SnackBarType.SUCCESS)
-    }, [setSnackBar])
+        snackBar(SnackBarActionType.CLEAR, SnackBarType.SUCCESS)
+    }, [snackBar])
 
 
     return (

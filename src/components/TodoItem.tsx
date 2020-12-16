@@ -6,11 +6,10 @@ import { useCallback, useState } from "react";
 import { useApi } from "../hooks/graphql/useApi";
 import { useActions } from "../hooks/redux/useActions";
 import { formatDate } from '../utils/formatters'
-import { todosIsItemUpdatingSelector } from '../redux/selectors/todoSelectors'
-import { useSelector } from "react-redux";
 import SnackBarActionType from "../types/SnackBarActionType";
 import SnackBarType from "../types/SnackBarType";
 import React from "react";
+import { useSnackBar } from "../hooks/redux/useSnackBar";
 
 export interface TodoItemProps {
     id: string
@@ -28,30 +27,27 @@ enum ItemUIStateTypes {
 function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItemProps) {
 
     const api = useApi()
-    const { todoUpdateItem, todoRemoveItem, setSnackBar } = useActions()
+    const { updateTodoItem, removeTodoItem } = useActions()
 
     const [uiState, setUIState] = useState(ItemUIStateTypes.DISPLAY)
     const [editText, setEditText] = useState(description)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false)
 
-    const isUpdating = useSelector(todosIsItemUpdatingSelector)
+    const snackBar = useSnackBar()
 
     const handleCompletedChange = useCallback((ev: any) => {
         api.setTodoCompleted(id, ev.target.checked).then(res => {
-            todoUpdateItem(res.setCompleted)
-            setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Completed flag changed successfully')
-        }).catch(() => { })
-    }, [todoUpdateItem, setSnackBar, api, id])
+            updateTodoItem(res)
+            snackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Completed flag changed successfully')
+        })
+    }, [updateTodoItem, snackBar, api, id])
 
     const handleDelete = useCallback(() => {
         api.deleteTodo(id).then(res => {
-            if (res.removed) {
-                todoRemoveItem(res)
-                setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo deleted')
-            } else {
-
-            }
-        }).catch(er => { })
-    }, [todoRemoveItem, setSnackBar, api, id])
+            removeTodoItem(res)
+            snackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo deleted')
+        })
+    }, [removeTodoItem, snackBar, api, id])
 
     const handleEdit = useCallback(() => {
         setUIState(ItemUIStateTypes.EDIT)
@@ -66,15 +62,14 @@ function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItem
     }, [])
 
     const handleUpdate = useCallback(() => {
-
+        setIsUpdating(true)
         api.modifyTodo(id, editText).then((data) => {
-            todoUpdateItem(data)
+            setIsUpdating(false)
+            updateTodoItem(data)
             setUIState(ItemUIStateTypes.DISPLAY)
-            setSnackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo update completed')
-        }).catch(() => {
+            snackBar(SnackBarActionType.SHOW, SnackBarType.SUCCESS, 'Todo update completed')
         })
-
-    }, [todoUpdateItem, setSnackBar, api, id, editText])
+    }, [updateTodoItem, snackBar, api, id, editText, setIsUpdating])
 
     const handleEditInputChange = useCallback((ev: any) => {
         setEditText(ev.target.value)
@@ -105,7 +100,7 @@ function TodoItem({ id, createdAt, updatedAt, completed, description }: TodoItem
                                 </ClickAwayListener>
                             }
                         </Grid>
-                        <Grid item xs={1}>
+                        <Grid item xs={12} md={2}>
                             {uiState === ItemUIStateTypes.DISPLAY ?
                                 <Button
                                     onClick={handleDelete}

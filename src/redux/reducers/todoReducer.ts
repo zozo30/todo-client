@@ -1,29 +1,30 @@
+import { Reducer } from 'redux'
 import { Todo } from '../../interfaces/Todo'
 import CompletedFilterType from '../../types/CompletedFilterType'
-import { todoConstants } from '../constants'
+import * as ActionTypes from '../constants'
+import { Action, TodoState } from '../types'
 
-export default function todoReducer(state = {
-    page: 0,
-    pages: 0,
+const todoReducer: Reducer<TodoState> = (state = {
+    take: 10,
+    skip: 0,
     total: 0,
     items: [],
-    isPaginate: false,
-    isUpdating: false,
     completdFilter: CompletedFilterType.ALL
-}, action: any) {
-    switch (action.type) {
-        case todoConstants.TODO_SET_ITEMS:
+}, action: any) => {
+    switch ((action as Action).type) {
+        case ActionTypes.SET_TODO_ITEMS:
             return { ...state, ...action.payload }
-        case todoConstants.TODO_ADD_ITEM:
+        case ActionTypes.ADD_TODO_ITEM:
             return { ...state, items: [action.payload, ...state.items] }
-        case todoConstants.TODO_REMOVE_ITEM:
+        case ActionTypes.REMOVE_TODO_ITEM:
             return { ...state, items: state.items.filter((todo: Todo) => todo.id !== action.payload.id) }
-        case todoConstants.TODO_UPDATE_ITEM:
+        case ActionTypes.UPDATE_TODO_ITEM:
             return { ...state, items: state.items.map((todo: Todo) => todo.id === action.payload.id ? { ...todo, ...action.payload } : todo) }
-        case todoConstants.TODO_SET_FILTER:
+        case ActionTypes.SET_TODO_FILTER:
             return { ...state, completdFilter: action.payload }
         default:
             return state
-
     }
 }
+
+export default todoReducer
